@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categoria {
+  idcategoria     Int            @id @default(autoincrement())
+  nombrecategoria String         @db.VarChar(120)
+  descripcion     String?        @db.VarChar(145)
+  producto        producto[]
+  subcategoria    subcategoria[]
+}
+
+model detalle_orden {
+  iddetalle_orden Int      @default(autoincrement())
+  idorden         Int
+  idproducto      Int
+  cantidad        String   @db.VarChar(45)
+  precio          String   @db.VarChar(45)
+  orden           orden    @relation(fields: [idorden], references: [idorden], onDelete: NoAction, onUpdate: NoAction, map: "orden")
+  producto        producto @relation(fields: [idproducto], references: [idproducto], onDelete: NoAction, onUpdate: NoAction, map: "producto")
+
+  @@id([iddetalle_orden, idorden])
+  @@index([idorden], map: "orden_idx")
+  @@index([idproducto], map: "producto_idx")
+}
+
+model orden {
+  idorden       Int             @id @default(autoincrement())
+  fechaorden    DateTime        @db.DateTime(0)
+  totalorden    String          @db.VarChar(45)
+  idusuario     Int
+  detalle_orden detalle_orden[]
+  usuario       usuario         @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "usuario2")
+
+  @@index([idusuario], map: "usuario_idx")
+}
+
+model producto {
+  idproducto     Int             @id @default(autoincrement())
+  nombreproducto String          @db.VarChar(300)
+  descripcion    String          @db.LongText
+  precio         Float           @db.Float
+  img1           String          @db.VarChar(120)
+  img2           String?         @db.VarChar(120)
+  img3           String?         @db.VarChar(120)
+  eliminado      Boolean         @default(false)
+  codproducto    String          @unique(map: "codproducto_UNIQUE") @db.VarChar(12)
+  idcategoria    Int
+  idsubcategoria Int
+  detalle_orden  detalle_orden[]
+  categoria      categoria       @relation(fields: [idcategoria], references: [idcategoria], onDelete: NoAction, onUpdate: NoAction, map: "categoria")
+  subcategoria   subcategoria    @relation(fields: [idsubcategoria], references: [idsubcategoria], onDelete: NoAction, onUpdate: NoAction, map: "subcategoria")
+
+  @@index([idcategoria], map: "categoria_idx")
+  @@index([idsubcategoria], map: "subcategoria_idx")
+}
+
+model rol {
+  idrol     Int       @id @default(autoincrement())
+  nombrerol String    @db.VarChar(45)
+  usuario   usuario[]
+}
+
+model usuario {
+  nombreusuario String    @db.VarChar(45)
+  password      String
+  email         String    @db.VarChar(45)
+  idrol         Int
+  confirm       Boolean   @default(false)
+  token         String    @db.VarChar(100)
+  idusuario     Int       @id @default(autoincrement())
+  eliminado     Boolean   @default(false)
+  cliente       cliente[]
+  orden         orden[]
+  rol           rol       @relation(fields: [idrol], references: [idrol], onDelete: NoAction, onUpdate: NoAction, map: "rol")
+
+  @@index([idrol], map: "rol_idx")
+}
+
+model cliente {
+  idcliente       Int      @id @default(autoincrement())
+  nombrecliente   String   @db.VarChar(45)
+  apellidocliente String   @db.VarChar(45)
+  fechanacimiento DateTime @db.Date
+  direccion       String   @db.VarChar(45)
+  telefono        String   @db.VarChar(45)
+  idusuario       Int
+  usuario         usuario  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "usuario")
+
+  @@index([idusuario], map: "usuario_idx")
+}
+
+model subcategoria {
+  idsubcategoria Int        @id @default(autoincrement())
+  nombresub      String     @db.VarChar(120)
+  descripcion    String?    @db.VarChar(145)
+  idcategoria    Int
+  producto       producto[]
+  categoria      categoria  @relation(fields: [idcategoria], references: [idcategoria], onDelete: NoAction, onUpdate: NoAction, map: "categoria2")
+
+  @@index([idcategoria], map: "categoria2_idx")
+}
