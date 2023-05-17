@@ -6,7 +6,7 @@ npm install
 ```
 ## 🚩 Script sql de la base de datos:
 ```
-https://gist.github.com/Brunoo9/79217535808537370afbc6b11bee56a4.js
+https://gist.github.com/Brunoo9/79217535808537370afbc6b11bee56a4
 ```
 ## 💡 El proyecto utliza PRISMA como ORM. Comandos utiles del CLI:
 
