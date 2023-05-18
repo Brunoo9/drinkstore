@@ -1,4 +1,4 @@
-## Drink Store
+# Drink Store
 
 ## ✅Instalar las dependencias iniciales del proyecto antes de trabajar:
 ```
